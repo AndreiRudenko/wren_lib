@@ -1,6 +1,6 @@
 // ported from https://github.com/underscorediscovery/luxe/blob/master/phoenix/Vector.hx
 
-import "assets/maths" for Maths
+import "maths" for Maths
 
 class Vector {
 

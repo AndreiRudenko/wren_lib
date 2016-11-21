@@ -1,6 +1,5 @@
 // ported from https://github.com/underscorediscovery/luxe/blob/master/luxe/utils/Maths.hx
 
-
 class Maths {
 
 	static lerp( value, target, t ) {
@@ -13,7 +12,6 @@ class Maths {
         if( slowness == 0 ) { slowness = 0.00000001 }
         return ((value * (slowness - 1)) + target) / slowness
     }
-
 
 	static clamp(value, a, b) { 
         return ( value < a ) ? a : ( ( value > b ) ? b : value )
@@ -36,7 +34,6 @@ class Maths {
 	}
 
 	static nearest_power_of_two(value) { 
-
 		value = value - 1
 		value = value | (value >> 1)
 		value = value | (value >> 2)
@@ -53,7 +50,6 @@ class Maths {
 	}
 
     static smoothstep( x, min, max ) {
-
         if (x <= min) {
             return 0
         }
@@ -65,11 +61,9 @@ class Maths {
         x = ( x - min ) / ( max - min )
 
         return x * x * ( 3 - 2 * x )
-
     }
 
     static smootherstep( x, min, max ) {
-
         if (x <= min) {
             return 0
         }
@@ -81,7 +75,6 @@ class Maths {
         x = ( x - min ) / ( max - min )
 
         return x * x * x * ( x * ( x * 6 - 15 ) + 10 )
-
     }
     
 	static sign( x ) {

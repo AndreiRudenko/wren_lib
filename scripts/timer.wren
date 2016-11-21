@@ -3,17 +3,18 @@
 
 
 class Timer {
+
 	static timers { __timers }
 
 	static init() {
-		System.print("Timer init")
 		__timers = []
 	}
 
-	static update(elapsed) {
+	static update() {
+		var time_ = System.clock
 		for (timer in __timers){
 			if (timer.active && !timer.finished && timer.timeLimit >= 0){
-				timer.update_(elapsed)
+				timer.update_(time_)
 			}
 		}
 	}
@@ -45,8 +46,8 @@ class Timer {
 	}
 
 	construct new() {
-
-		_elapsedTime = 0
+		_startTime = 0
+		_timeOffset = 0
 		_timeLimit = 0
 		_loops = 0
 		_active = false
@@ -58,29 +59,26 @@ class Timer {
 		_onComplete = null
 		_onRepeat = null
 		_onUpdate = null
-
 	}
 
 	finished { _finished }
 	active { _active }
 
-	elapsedTime { _elapsedTime }
 	timeLimit { _timeLimit }
 
-	timeLeft { _timeLimit - _elapsedTime }
-	loopsLeft { _loops - _loopsCounter }
+	elapsedTime { System.clock - _startTime }
+	timeLeft { (_startTime + _timeLimit) - (System.clock + _timeOffset) }
 	elapsedLoops { _loopsCounter }
-	progress { (_timeLimit > 0) ? (_elapsedTime / _timeLimit) : 0 }
+	loopsLeft { _loops - _loopsCounter }
+
+	progress { (_timeLimit > 0) ? ((elapsedTime + _timeOffset) / _timeLimit) : 0 }
 
 	active=(value) { _active = value } 
 
-	elapsedTime=(value) { _elapsedTime = value } 
 	timeLimit=(value) { _timeLimit = value } 
-
 
 	pause() { _active = false }
 	resume() { _active = true }
-
 
 	start(timeLimit_) {
 		if (!_inArray) {
@@ -91,15 +89,17 @@ class Timer {
 		_active = true
 		_finished = false
 
-		_elapsedTime = 0
+		_timeOffset = 0
+		_startTime = System.clock
 		_timeLimit = timeLimit_.abs
 		
 		_loops = 1
 		_loopsCounter = 0
+
 		return this
 	}
 
-	start(elapsedTime_, timeLimit_) {
+	start(currentTime_, timeLimit_) {
 		if (!_inArray) {
 			__timers.add(this)
 			_inArray = true
@@ -108,11 +108,13 @@ class Timer {
 		_active = true
 		_finished = false
 
-		_elapsedTime = elapsedTime_.abs
+		_timeOffset = currentTime_
+		_startTime = System.clock
 		_timeLimit = timeLimit_.abs
 		
 		_loops = 1
 		_loopsCounter = 0
+
 		return this
 	}
 
@@ -159,7 +161,9 @@ class Timer {
 	}
 
 	stop() {
-		if (_onComplete != null) _onComplete.call()
+		if (_onComplete != null) {
+			_onComplete.call()
+		}
 
 		_finished = true
 		_active = false
@@ -174,25 +178,8 @@ class Timer {
 		}
 	}
 
-	update_(elapsed) {
-
-		if (_onUpdate != null) _onUpdate.call()
-
-		_elapsedTime = _elapsedTime + elapsed
-		while ((_elapsedTime >= _timeLimit) && _active && !_finished) {
-			_elapsedTime = _elapsedTime - _timeLimit
-			_loopsCounter = _loopsCounter + 1
-			
-			if (_loops > 0 && (_loopsCounter >= _loops)) {
-				stop()
-			} else {
-				if (_onRepeat != null) _onRepeat.call()
-			}
-		}
-	}
-
-	elapsed(t) {
-		return _elapsedTime >= t
+	elapsed(t) { 
+		return _startTime + _t < System.clock 
 	}
 
 	destroy() {
@@ -211,6 +198,29 @@ class Timer {
 		_onComplete = null
 		_onRepeat = null
 		_onUpdate = null
+	}
+
+	update_(time_) {
+		if (_onUpdate != null) {
+			_onUpdate.call()
+		}
+
+		while ( _active && !_finished && ( _startTime + _timeLimit < time_ + _timeOffset ) ) {
+			_loopsCounter = _loopsCounter + 1
+			
+			if (_loops > 0 && (_loopsCounter >= _loops)) {
+				stop()
+				break
+			}
+
+			_timeOffset = 0
+
+			_startTime = _startTime + _timeLimit
+
+			if (_onRepeat != null) {
+				_onRepeat.call()
+			}
+		}
 	}
 
 }
