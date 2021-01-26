@@ -124,38 +124,38 @@ class AffineTransform {
 	}
 
 	append(m) {
-        var a1 = _a
-        var b1 = _b
-        var c1 = _c
-        var d1 = _d
+		var a1 = _a
+		var b1 = _b
+		var c1 = _c
+		var d1 = _d
 
-        _a = m.a * a1 + m.b * c1
-        _b = m.a * b1 + m.b * d1
-        _c = m.c * a1 + m.d * c1
-        _d = m.c * b1 + m.d * d1
+		_a = m.a * a1 + m.b * c1
+		_b = m.a * b1 + m.b * d1
+		_c = m.c * a1 + m.d * c1
+		_d = m.c * b1 + m.d * d1
 
-        _tx = m.tx * a1 + m.ty * c1 + _tx
-        _ty = m.tx * b1 + m.ty * d1 + _ty
+		_tx = m.tx * a1 + m.ty * c1 + _tx
+		_ty = m.tx * b1 + m.ty * d1 + _ty
 
 		return this
 	}
 
 	prepend(m) {
-	    if (m.a != 1 || m.b != 0 || m.c != 0 || m.d != 1) {
-	        var a1 = _a
-	        var c1 = _c
+		if (m.a != 1 || m.b != 0 || m.c != 0 || m.d != 1) {
+			var a1 = _a
+			var c1 = _c
 
-	        _a = a1 * m.a + _b * m.c
-	        _b = a1 * m.b + _b * m.d
-	        _c = c1 * m.a + _d * m.c
-	        _d = c1 * m.b + _d * m.d
-	    }
+			_a = a1 * m.a + _b * m.c
+			_b = a1 * m.b + _b * m.d
+			_c = c1 * m.a + _d * m.c
+			_d = c1 * m.b + _d * m.d
+		}
 
-	    var tx1 = _tx
-	    _tx = tx1 * m.a + _ty * m.c + m.tx
-	    _ty = tx1 * m.b + _ty * m.d + m.ty
+		var tx1 = _tx
+		_tx = tx1 * m.a + _ty * m.c + m.tx
+		_ty = tx1 * m.b + _ty * m.d + m.ty
 
-	    return this
+		return this
 	}
 
 	orto(left, right, bottom, top) {

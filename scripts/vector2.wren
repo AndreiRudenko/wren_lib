@@ -176,7 +176,7 @@ class Vector2 {
 	}
 
 	truncate(max) { 
-        length = (max..length).min
+		length = (max..length).min
 		return this
 	}
 
@@ -195,9 +195,9 @@ class Vector2 {
 	}
 
 	rotationTo(other) { 
-        var theta = (other.x - x).atan(other.y - y)
-        var r = -(180.0 + (theta * 180.0/Num.pi))
-        return r
+		var theta = (other.x - x).atan(other.y - y)
+		var r = -(180.0 + (theta * 180.0/Num.pi))
+		return r
 	}
 
 	rotate(radians) {
@@ -247,23 +247,23 @@ class Vector2 {
 	}
 
 	static Cross(a, b) {
-        return a.cross(b)
+		return a.cross(b)
 	}
 
 	static RotationTo(a, b) {
-        return a.rotationTo(b)
+		return a.rotationTo(b)
 	}
 
 	static Distance(a, b) {
-        return a.distance(b)
+		return a.distance(b)
 	}
 
 	static Degrees(v) { 
-        return v.clone().degrees()
+		return v.clone().degrees()
 	}
 
 	static Radians(v) { 
-        return v.clone().radians()
+		return v.clone().radians()
 	}
 
 	+(other) {
