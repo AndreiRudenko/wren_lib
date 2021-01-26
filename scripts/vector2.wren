@@ -1,20 +1,19 @@
-// ported from https://github.com/underscorediscovery/luxe/blob/master/phoenix/Vector.hx
-
-import "maths" for Maths
-
-class Vector {
+class Vector2 {
 
 	construct new() {
 		_x = 0
 		_y = 0
 	}
 
-	construct new(x,y) {
+	construct new(x, y) {
 		_x = x
 		_y = y
 	}
 
+	x { _x } 
 	x=(value) { _x = value } 
+
+	y { _y }
 	y=(value) { _y = value }
 
 	[i]=(value) {
@@ -26,9 +25,7 @@ class Vector {
 		return this
 	}
 
-	length=(value) {
-		normalize().multiply(value)
-	}
+	length=(value) { normalize().multiply(value) }
 
 	angle2D=(value) {
 		var len = length
@@ -37,9 +34,6 @@ class Vector {
 		return value
 	}
 
-	x { _x } 
-	y { _y }
-	
 	[i] {
 		if (i == 0) {
 			return _x
@@ -50,27 +44,16 @@ class Vector {
 		}
 	}
 
-	length { 
-		return ( x * x + y * y ).sqrt
-	}
+	length { (x * x + y * y).sqrt }
+	lengthSq { x * x + y * y }
 
-	lengthsq { 
-		return x * x + y * y
-	}
+	angle2D { _y.atan(_x) }
 
-	angle2D { 
-		return _y.atan(_x)
-	}
+	inverted { Vector2.new(-_x, -_y) }
 
-	inverted { 
-		return Vector.new(-_x, -_y) 
-	}
+	normalized { Vector2.Divide(this, length) }
 
-	normalized { 
-		return Vector.Divide( this, length )
-	}
-
-	copy_from(other) { 
+	copyFrom(other) { 
 		_x = other.x
 		_y = other.y 
 		return this
@@ -82,48 +65,41 @@ class Vector {
 		return this
 	}
 
-	lerp( other, t ) {
-		_x = Maths.lerp(_x, other.x, t)
-		_y = Maths.lerp(_y, other.y, t)
+	lerp(other, t) {
+		_x = _x + t * (other.x - _x)
+		_y = _y + t * (other.y - _y)
 		return this
 	}
 
 	int() {
-		_x = Maths.round(_x)
-		_y = Maths.round(_y)
+		_x = _x.round
+		_y = _y.round
 		return this
 	}
-
-	int_x() {
-		_x = Maths.round(_x)
-		return this
-	}
-
-	int_y() {
-		_y = Maths.round(_y)
-		return this
-	}
-
 
 	equals(value) { 
 		return _x == value.x && _y == value.y
 	}
 
 	clone() { 
-		return Vector.new(_x, _y)
+		return Vector2.new(_x, _y)
 	}
 
 	normalize() {
-		return divide( length )
+		return divide(length)
 	}
 
 	dot(other) { 
 		return x * other.x + y * other.y
 	}
 
-	// cross(other) {
-	// 	return x * other.x + y * other.y
-	// }
+	cross(other) {
+		return x * other.y - y * other.x
+	}
+
+	distance(other) {
+		return ((other.y - y) * (other.y - y) + (other.x - x) * (other.x - x)).sqrt
+	}
 
 	invert() {
 		_x = -_x
@@ -204,21 +180,35 @@ class Vector {
 		return this
 	}
 
+	perpendicular() {
+		perpendicular(true)
+		return this
+	}
+
+	perpendicular(clockwise) {
+		if(clockwise) {
+			set(y, -x)
+		} else {
+			set(-y, x)
+		}
+		return this
+	}
+
 	rotationTo(other) { 
         var theta = (other.x - x).atan(other.y - y)
         var r = -(180.0 + (theta * 180.0/Num.pi))
         return r
 	}
 
-	degrees() { 
-		_x = Maths.degrees(_x)
-		_y = Maths.degrees(_y)
+	rotate(radians) {
+		var ca = radians.cos
+		var sa = radians.sin
+		set(ca * _x - sa * _y, sa * _x + ca * _y)
 		return this
 	}
 
-	radians() { 
-		_x = Maths.radians(_x)
-		_y = Maths.radians(_y)
+	transform(a, b, c, d, tx, ty) {
+		set(a * _x + c * _y + tx, b * _x + d * _y + ty)
 		return this
 	}
 
@@ -226,93 +216,98 @@ class Vector {
 
 	static Add(a, b) { 
 		if (b is Num) {
-			return Vector.new(a.x + b, a.y + b)
+			return Vector2.new(a.x + b, a.y + b)
 		} else {
-			return Vector.new(a.x + b.x, a.y + b.y)
+			return Vector2.new(a.x + b.x, a.y + b.y)
 		}
 	}
 
 	static Subtract(a, b) { 
 		if (b is Num) {
-			return Vector.new(a.x - b, a.y - b)
+			return Vector2.new(a.x - b, a.y - b)
 		} else {
-			return Vector.new(a.x - b.x, a.y - b.y)
+			return Vector2.new(a.x - b.x, a.y - b.y)
 		}
 	}
 
 	static Multiply(a, b) { 
 		if (b is Num) {
-			return Vector.new(a.x * b, a.y * b)
+			return Vector2.new(a.x * b, a.y * b)
 		} else {
-			return Vector.new(a.x * b.x, a.y * b.y)
+			return Vector2.new(a.x * b.x, a.y * b.y)
 		}
 	}
 
 	static Divide(a, b) { 
 		if (b is Num) {
-			return Vector.new(a.x / b, a.y / b)
+			return Vector2.new(a.x / b, a.y / b)
 		} else {
-			return Vector.new(a.x / b.x, a.y / b.y)
+			return Vector2.new(a.x / b.x, a.y / b.y)
 		}
 	}
 
-	// static Cross(a, b) {}
+	static Cross(a, b) {
+        return a.cross(b)
+	}
 
 	static RotationTo(a, b) {
         return a.rotationTo(b)
 	}
 
-	static Degrees(radian_vector) { 
-        return radian_vector.clone().degrees()
+	static Distance(a, b) {
+        return a.distance(b)
 	}
 
-	static Radians(degree_vector) { 
-        return degree_vector.clone().radians()
+	static Degrees(v) { 
+        return v.clone().degrees()
 	}
 
+	static Radians(v) { 
+        return v.clone().radians()
+	}
 
 	+(other) {
 		if (other is Num) {
-			return Vector.new(_x + other, _y + other)
+			return Vector2.new(_x + other, _y + other)
 		} else {
-			return Vector.new(_x + other.x, _y + other.y)
+			return Vector2.new(_x + other.x, _y + other.y)
 		}
 	}
 
 	-(other) {
 		if (other is Num) {
-			return Vector.new(_x - other, _y - other)
+			return Vector2.new(_x - other, _y - other)
 		} else {
-			return Vector.new(_x - other.x, _y - other.y)
+			return Vector2.new(_x - other.x, _y - other.y)
 		}
 	}
 
 	*(other) {
 		if (other is Num) {
-			return Vector.new(_x * other, _y * other)
+			return Vector2.new(_x * other, _y * other)
 		} else {
-			return Vector.new(_x * other.x, _y * other.y)
+			return Vector2.new(_x * other.x, _y * other.y)
 		}
 	}
 
 	/(other) {
 		if (other is Num) {
-			return Vector.new(_x / other, _y / other)
+			return Vector2.new(_x / other, _y / other)
 		} else {
-			return Vector.new(_x / other.x, _y / other.y)
+			return Vector2.new(_x / other.x, _y / other.y)
 		}
 	}
 
 	%(other) {
 		if (other is Num) {
-			return Vector.new(_x % other, _y % other)
+			return Vector2.new(_x % other, _y % other)
 		} else {
-			return Vector.new(_x % other.x, _y % other.y)
+			return Vector2.new(_x % other.x, _y % other.y)
 		}
 	}
 
 	- {
-		return Vector.new(-_x, -_y)
+		return Vector2.new(-_x, -_y)
 	}
 
 }

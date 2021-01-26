@@ -1,6 +1,6 @@
 // Timer.wren
-// autor: Andrei Rudenko (25.07.2016)
-
+// author: Andrei Rudenko (25.07.2016)
+// license: MIT
 
 class Timer {
 
